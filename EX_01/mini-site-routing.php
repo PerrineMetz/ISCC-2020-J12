@@ -12,6 +12,8 @@
     <a href="http://localhost:8888/ISCC-2020/ISCC-2020-J09/EX_01/mini-site-routing.php?page=connexion">Connexion</a>
     
     <?php
+
+if ($_COOKIE['id']){
     session_start();
     if (session_status() == PHP_SESSION_ACTIVE)
     echo '<a href="http://localhost:8888/ISCC-2020/ISCC-2020-J09/EX_01/mini-site-routing.php?page=admin">Admin</a>';
@@ -46,20 +48,18 @@
     </h1>
     <p>
     <?php
-if (array_key_exists('id',$_SESSION)==true){
-    echo 'Login: '.$_SESSION['id']. '.';};
-
-    $cleid = array_keys ($_SESSION);
-
-    if(array_key_exists('id',$_SESSION)==false){
-        if (empty($_COOKIE ["$cleid[0]"])== false){
-    $_COOKIE[$cleid[0]]=$_SESSION ['login'];
-    $_COOKIE[$_SESSION['id']]=$_SESSION['id'];
-        }
-        else{
-        }
-    }
-?>
+        if (isset($_SESSION["id"])) {
+            echo 'Login: ' . $_SESSION["id"] . '.';
+        }elseif(isset($_COOKIE["id"])) {
+        $_SESSION['id']=$_POST['login'];
+        $SESSION['mdp']=$_POST['password'];
+            } 
+            else {
+                header('http://localhost:8888/ISCC-2020/ISCC-2020-J09/EX_01/mini-site-routing.php?page=connexion');
+            exit();
+            }
+        
+        ?>
 
 </p>
     </body>

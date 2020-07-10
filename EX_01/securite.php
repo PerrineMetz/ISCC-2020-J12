@@ -1,26 +1,62 @@
 <?php
 
 session_start();
-echo $_POST["login"];
-echo "<b>";
-echo $_POST ["password"];
-echo "<br>";
 
-if ($_POST["password"]=="2020"){
-    $_SESSION ["id"]=$_POST ["login"];
+echo $_POST['login'];
+echo '<br>';
+echo $_POST['password'];
+echo '<br>';
 
-    header("Location:http://localhost:8888/ISCC-2020/ISCC-2020-J09/EX_01/mini-site-routing.php?page=1");
+function connect_to_database()
+{
+  $servername = "localhost";
+  $username = "root";
+  $password = "root";
+  $databasename = "base-site-rooting";
 
+  try {
+    $pdo = new PDO("mysql:host=$servername;dbname=$databasename", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    echo "Vous êtes connectés <br>";
+    return($pdo);
+  } catch (PDOException $e) {
+    echo "La connexion a échoué" . $e->getMessage();
+  }
 }
+function login($pdo)
+{
+  try {
+    if (empty($_POST['login']) && !empty($_POST['password'])) {
 
-elseif($_POST['password'] !='2020'){
-    echo 'Mauvais couple identifiant / mot de passe.<br>';
-    echo '<a href="http://localhost:8888/ISCC%20-%202020/ISCC-2020-J09/EX-01/mini-site-routing.php?page=connexion">Connexion</a>';
-   }
-    
-   $cleid = array_keys($_SESSION);
-   if(array_key_exists('id',$_SESSION)==true){
-    setcookie ($cleid[0],$_SESSION['id']);
-   }
-    
-   ?>
+      $login = $_POST['login'];
+      $password = $_POST['password'];
+      echo '1er if bon';
+     
+      $requete=$pdo->query("SELECT passwordd
+      FROM utilisateurs 
+      WHERE loginn='$login'");
+    $res=$requete->fetchAll();
+
+      if ($res) {
+        
+        if ($password == $res[0]['passwordd']) {
+          echo "Connection réussie : bon couple identifiant/Mot de passe.";
+        } else {
+          echo "Mauvais couple identitifant/Mot de passe.";
+        }
+      } else {
+        echo '<a href="http://localhost:8888/ISCC-2020/ISCC-2020-J09/EX_01/mini-site-routing.php?page=connexion">Connexion</a>';
+      }
+    }
+  } catch (PDOException $e) {
+    echo "Login erreur" . $e->getMessage();
+  }
+}
+$pdo = connect_to_database();
+login($pdo);
+
+$cleid = array_keys($_SESSION);
+if (array_key_exists('id', $_SESSION) == true) {
+  setcookie($cleid[0], $_SESSION['id']);
+}
